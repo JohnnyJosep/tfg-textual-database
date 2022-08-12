@@ -2,13 +2,13 @@ using MediatR;
 
 using TextualDatabase.Handlers.Base;
 
-namespace TextualDatabase.Queries;
+namespace TextualDatabase.Handlers.Queries;
 
-internal record WheatherForecastQuery(int Days) : IHttpRequest;
+internal record WheaterForecastQuery(int Days) : IHttpRequest;
 
-internal class WheatherForecastHandler : IRequestHandler<WheatherForecastQuery, IResult>
+internal class WheatherForecastHandler : IRequestHandler<WheaterForecastQuery, IResult>
 {
-    public async Task<IResult> Handle(WheatherForecastQuery request, CancellationToken cancellationToken)
+    public async Task<IResult> Handle(WheaterForecastQuery request, CancellationToken cancellationToken)
     {
         await Task.Delay(1, cancellationToken);
 

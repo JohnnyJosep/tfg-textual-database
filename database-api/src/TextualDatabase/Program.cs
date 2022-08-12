@@ -1,7 +1,7 @@
 using MediatR;
 
 using TextualDatabase;
-using TextualDatabase.Queries;
+using TextualDatabase.Handlers.Queries;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,6 +14,6 @@ var app = builder.Build();
 
 app.UseSwagger().UseSwaggerUI().UseHttpsRedirection();
 
-app.MapMediateGet<WheatherForecastQuery>("/weatherforecast/{days}").WithName("GetWeatherForecast");
+app.MapMediateGet<WheaterForecastQuery>("/weatherforecast/{days}").WithName("GetWeatherForecast");
 
 app.Run();
