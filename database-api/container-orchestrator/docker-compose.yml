@@ -1,0 +1,21 @@
+version: '3.4'
+
+services:
+
+  textualdatabase:
+    image: ${DOCKER_REGISTRY-}textualdatabase
+    build:
+      context: ..
+      dockerfile: src/TextualDatabase/Dockerfile
+
+  redis:
+    image: redis:alpine
+
+  rabbitmq:
+    image: rabbitmq:management-alpine
+
+  freeling:
+    build:
+      context: .
+      dockerfile: freeling.dockerfile
+    command: analyze -f es.cfg --server -p 50005
