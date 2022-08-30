@@ -1,2 +1,4 @@
 .data
 .idea
+*credential.json
+*token.json
