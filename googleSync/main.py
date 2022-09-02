@@ -15,7 +15,9 @@ TOKEN_FILE = 'gdrive_sync_token.json'
 GDRIVE_FOLDER_MIMETYPE = 'application/vnd.google-apps.folder'
 MIMETYPES = {
     '.pdf': 'application/pdf',
-    '.txt': 'text/plain'
+    '.txt': 'text/plain',
+    '.jpeg': 'image/jpeg',
+    '.pkl': 'application/octet-stream'
 }
 
 
@@ -50,16 +52,25 @@ def _upload_new_files(drive_service, drive_files, folder, base_folder, root_id):
             if file_extension in MIMETYPES:
                 print(f'Upload: {path}')
                 mimetype = MIMETYPES[file_extension]
-                parent = path[len(base_folder):-len(name)-1]
-                if parent not in drive_files:
-                    # TODO: make recursive folders creation
-                    folder_metadata = {
-                        'name': parent,
-                        'mimeType': GDRIVE_FOLDER_MIMETYPE,
-                        'parents': [root_id]
-                    }
-                    new_folder = drive_service.files().create(body=folder_metadata, fields='id').execute()
-                    drive_files[parent] = new_folder.get('id')
+                parent_folders = path[len(base_folder):-len(name)-1].split('/')
+                parent = ''
+                parent_id = root_id
+                for parent_folder in parent_folders:
+                    if parent == '':
+                        parent = parent_folder
+                    else:
+                        parent += f"/{parent_folder}"
+
+                    if parent not in drive_files:
+                        folder_metadata = {
+                            'name': parent_folder,
+                            'mimeType': GDRIVE_FOLDER_MIMETYPE,
+                            'parents': [parent_id]
+                        }
+                        new_folder = drive_service.files().create(body=folder_metadata, fields='id').execute()
+                        drive_files[parent] = new_folder.get('id')
+
+                    parent_id = drive_files[parent]
 
                 file_metadata = {
                     'name': name,
@@ -102,7 +113,17 @@ def _download_files(drive_service, drive_files, base_folder):
 
 
 def sync_folder(
-        local_folder='.data', gdrive_folder_name='TFG-DATA', token_file=TOKEN_FILE, credential_file=CREDENTIAL_FILE):
+        local_folder='.data',
+        gdrive_folder_name='TFG-DATA',
+        token_file=TOKEN_FILE,
+        credential_file=CREDENTIAL_FILE):
+    """
+    Sync local_folder with gdrive_folder
+    :param local_folder: local folder path
+    :param gdrive_folder_name: gdrive folder
+    :param token_file: token file
+    :param credential_file: credential file
+    """
 
     store = oauth2file.Storage(token_file)
     creds = store.get()
