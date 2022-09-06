@@ -115,7 +115,6 @@ def _parse_session(text):
                 if title_treatment != '':
                     print('\t', title_treatment.strip('()'))
 
-
     return points
 
 
