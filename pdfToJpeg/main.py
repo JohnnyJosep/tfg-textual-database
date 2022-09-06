@@ -15,9 +15,11 @@ image_path = environ['IMG_PATH']
 if __name__ == '__main__':
     print(f'pdfs {pdf_path} to jpegs {image_path}')
 
+    print(len(listdir(pdf_path)))
     pdfs = [f'{pdf_path}/{file}' for file in listdir(pdf_path)]
 
     for pdf in pdfs:
+        print(pdf)
         folder = f'{image_path}/{basename(pdf)[:-4]}'
         if isdir(folder):
             continue

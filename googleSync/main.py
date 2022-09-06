@@ -1,4 +1,4 @@
-# https://code.luasoftware.com/tutorials/python/python-google-drive-api-to-sync-folder/
+
 import shutil
 from os import listdir, makedirs
 from os.path import isdir, splitext, basename, exists
@@ -19,6 +19,47 @@ MIMETYPES = {
     '.jpeg': 'image/jpeg',
     '.pkl': 'application/octet-stream'
 }
+
+
+def _gdrive_folder_content(drive_service, folder_id, parent_folder='', page_token=None):
+    response = drive_service.files().list(q=f"'{folder_id}' in parents", pageToken=page_token).execute()
+    files = {}
+    folders = {}
+
+    for file in response.get('files', []):
+        file_id = file.get('id')
+        file_name = f"{parent_folder}{file.get('name')}"
+        if file['mimeType'] == GDRIVE_FOLDER_MIMETYPE:
+            folders[file_name] = file_id
+        else:
+            files[file_name] = file_id
+
+    next_page_token = response.get('nextPageToken')
+    if next_page_token is not None:
+        next_files, next_folders = _gdrive_folder_content(drive_service, folder_id, parent_folder, next_page_token)
+        files |= next_files
+        folders |= next_folders
+
+    return files, folders
+
+
+def _gdrive_download(drive_service, file_id, path):
+    name = basename(path)
+    folder = path[:-len(name)-1]
+    if not exists(folder):
+        makedirs(folder)
+
+    request = drive_service.files().get_media(fileId=file_id)
+    fh = io.BytesIO()
+    downloader = MediaIoBaseDownload(fh, request, chunksize=204800)
+    done = False
+    while not done:
+        status, done = downloader.next_chunk()
+    fh.seek(0)
+    with open(path, 'wb') as file:
+        shutil.copyfileobj(fh, file)
+
+    print('Downloaded', path)
 
 
 def _check_files(drive_service, folder_id, parent_folder='', page_token=None):
@@ -143,21 +184,34 @@ def sync_folder(
 
     items = response.get('files', [])
     if not items:
-        print(f"'{gdrive_folder_name} not found, create new")
+        print(f"'{gdrive_folder_name}' not found, create new")
         file = drive_service.files().create(body=file_metadata, fields='id').execute()
     else:
         file = items[0]
 
-    folder_id = file.get('id')
+    # synchronize folders
+    current_folder = [{'local_folder_path': local_folder, 'gdrive_folder_id': file.get('id')}]
 
-    # check files on gdrive
-    drive_filenames = _check_files(drive_service, folder_id)
+    while len(current_folder) > 0:
+        folder = current_folder.pop()
+        local_folder_path = folder['local_folder_path']
+        gdrive_folder_id = folder['gdrive_folder_id']
 
-    # only upload new files
-    _upload_new_files(drive_service, drive_filenames, local_folder, local_folder + '/', folder_id)
+        gdrive_files, gdrive_folders = _gdrive_folder_content(drive_service, gdrive_folder_id)
 
-    # download files
-    _download_files(drive_service, drive_filenames, local_folder)
+        # download none existing local files
+        for gdrive_file in gdrive_files:
+            local_file_path = f"{local_folder_path}/{gdrive_file}"
+            if not exists(local_file_path):
+                _gdrive_download(drive_service, gdrive_files[gdrive_file], local_file_path)
+
+        # upload none existing gdrive files
+
+        # append gdrive folders to scan
+        for gdrive_folder in gdrive_folders:
+            new_gdrive_folder_id = gdrive_folders[gdrive_folder]
+            new_local_folder_path = f"{local_folder_path}/{gdrive_folder}"
+            current_folder.append({'local_folder_path': new_local_folder_path, 'gdrive_folder_id': new_gdrive_folder_id})
 
 
 if __name__ == '__main__':
