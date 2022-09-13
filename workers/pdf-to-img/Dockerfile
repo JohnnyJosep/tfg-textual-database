@@ -1,4 +1,4 @@
-FROM python:3.10.2-alpine
+FROM python:3.10.6-alpine
 
 WORKDIR /usr/src/app
 
@@ -9,5 +9,5 @@ RUN apk add --update jpeg-dev zlib-dev libjpeg gcc musl-dev poppler poppler-util
 COPY requirements.txt ./
 RUN pip install --no-cache-dir -r requirements.txt
 
-COPY main.py ./
+COPY . .
 CMD [ "python", "-u", "main.py" ]

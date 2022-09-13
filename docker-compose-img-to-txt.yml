@@ -1,0 +1,42 @@
+version: "3.9"
+
+services:
+  my-rabbitmq:
+    image: rabbitmq:3.10-management-alpine
+    healthcheck:
+      test: rabbitmq-diagnostics -q ping
+      interval: 30s
+      timeout: 30s
+      retries: 3
+    environment:
+      - RABBITMQ_DEFAULT_USER=myuser
+      - RABBITMQ_DEFAULT_PASS=mypassword
+    ports:
+      - '5672:5672'
+      - '15672:15672'
+    volumes:
+      - '.docker/rabbit:/var/lib/rabbitmq/'
+    restart: always
+    networks:
+      - tfg
+
+  img-to-txt:
+    build:
+      context: workers/img-to-txt
+    depends_on:
+      - my-rabbitmq
+    volumes:
+      - '.data:/home/data'
+    environment:
+      - DATA_PATH=/home/data
+#    deploy:
+#      mode: replicated
+#      replicas: 2
+    restart: always
+    networks:
+      - tfg
+
+networks:
+  tfg:
+    driver: bridge
+

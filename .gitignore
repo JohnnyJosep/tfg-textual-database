@@ -1,4 +1,6 @@
 .data
+.docker
 .idea
+.ipynb_checkpoints
 *credential.json
 *token.json

@@ -9,13 +9,15 @@ MonthPattern = '(enero|febrero|mayo|abril|marzo|junio|julio|agosto|septiembre|se
 DatePattern = r'\d{1,2} de ' + MonthPattern + r' de \d{4}'
 CelebratedPattern = 'celebrada el ' + WeekDayPattern + ' ' + DatePattern
 
-OpenSessionPattern = r'Se (abre|reanuda) la sesión a (.+) (de la mañana|del mediodía|de la tarde|de la noche)\.\n'
+OpenSessionPattern = r'Se (abre|reanuda) la sesión a (.+) (de la mañana|del mediodía|de la tarde|de la noche|horas)( y (.+) minutos)?\.\n'
 EndSessionPattern = r'(Eran las|Era la) (.+?) (de la mañana|del mediodía|de la tarde|de la noche)\.\s*\n'
 
 SpeakerTreatmentPattern = r'^(' + MaleTreatment + '|' + FemaleTreatment + ')'
 SpeakerNamePattern = r'[A-ZÀÄÁÈËÉÌÏÍÒÖÓÙÜÚÑ\·\- ,]+'
 SpeakerTitlePattern = r'( \([A-Za-zÀàÄäÁáÈèËëÉéÌìÏïÍíÒòÖöÓóÙùÜüÚúÑñ\·\- ]*?\))?'
 SpeakerPattern = SpeakerTreatmentPattern + SpeakerNamePattern + SpeakerTitlePattern + '\:'
+
+InterruptionPattern = r' \((.+?)\)'
 
 
 def _parse_presidency(text):
@@ -62,6 +64,63 @@ def _is_title(paragraph):
     return title.isupper()
 
 
+def _parse_speech_text(text):
+    interruptions_positions = [(m.start(0), m.end(0)) for m in re.finditer(InterruptionPattern, text)]
+    if len(interruptions_positions) == 0:
+        return {'text': text}
+
+    interruptions = []
+    start = 0
+    for interruptions_position in interruptions_positions:
+        init = interruptions_position[0] - start
+        end = interruptions_position[1] - start
+        interruption = {'text': text[init + 2: end - 1], 'position': init}
+
+        text = text[:init] + text[end:]
+        start += (end - init)
+
+        interruptions.append(interruption)
+
+    return {'text': text, 'interruptions': interruptions}
+
+
+def _parse_speeches(title, text):
+    speeches = []
+    paragraphs = text.split('\n')
+
+    speech_text = ''
+    speech = {'title': title, 'order': 0}
+    speech_order = 1
+
+    for paragraph in paragraphs:
+        search = re.search(SpeakerPattern, paragraph)
+        if search:
+            if speech_text != '':
+                speech |= _parse_speech_text(speech_text)
+                speeches.append(speech)
+                speech = {'title': title, 'order': speech_order}
+                speech_order += 1
+
+            found = search.group()
+            name_search = re.search(SpeakerTreatmentPattern + SpeakerNamePattern, found)
+            name_found = name_search.group()
+            is_male = found.startswith(MaleTreatment)
+            speech['gender'] = 'male' if is_male else 'female'
+            speech['name'] = name_found[len(MaleTreatment):] if is_male else name_found[len(FemaleTreatment):]
+
+            title_treatment = found[len(name_found):-1]
+            if title_treatment != '':
+                speech['explanatory'] = title_treatment.strip('()')
+
+            speech_text = paragraph[len(found):]
+        else:
+            speech_text += '\n' + paragraph
+
+    speech |= _parse_speech_text(speech_text)
+    speeches.append(speech)
+    return speeches
+
+
 def _parse_session(text):
     it = [m.end(0) for m in re.finditer(OpenSessionPattern, text)]
     session_text = text[it[-1]:]
@@ -79,43 +138,20 @@ def _parse_session(text):
         else:
             paragraph = line
 
-    point_title = ''
-    point_text = ''
-    points = []
+    speech_title = ''
+    speech_text = ''
+    speeches = []
     for paragraph in paragraphs:
         if _is_title(paragraph):
-            if point_title != '':
-                points.append({'title': point_title, 'text': point_text})
-                point_text = ''
-            point_title = paragraph
-        elif point_text == '':
-            point_text = paragraph
+            if speech_title != '':
+                speeches += _parse_speeches(speech_title, speech_text)
+            speech_title = paragraph
+            speech_text = ''
         else:
-            point_text += '\n' + paragraph
+            speech_text += paragraph if speech_text == '' else '\n' + paragraph
 
-    points.append({'title': point_title, 'text': point_text})
-
-    for point in points:
-        point_text_lines = point['text'].split('\n')
-        for point_text_line in point_text_lines:
-            search = re.search(SpeakerPattern, point_text_line)
-            if search:
-                found = search.group()
-                print('-', found)
-                name_search = re.search(SpeakerTreatmentPattern + SpeakerNamePattern, found)
-                name_found = name_search.group()
-                if found.startswith(MaleTreatment):
-                    print('\t', 'male')
-                    print('\t', name_found[len(MaleTreatment):])
-                else:
-                    print('\t', 'female')
-                    print('\t', name_found[len(FemaleTreatment):])
-
-                title_treatment = found[len(name_found):-1]
-                if title_treatment != '':
-                    print('\t', title_treatment.strip('()'))
-
-    return points
+    speeches += _parse_speeches(speech_title, speech_text)
+    return speeches
 
 
 def parse_diary(text, source, legislature, session):
@@ -129,13 +165,16 @@ def parse_diary(text, source, legislature, session):
         'session': session
     }
 
-    session_text = _parse_session(text)
+    speeches = _parse_session(text)
+    for speech in speeches:
+        speech |= data
 
-    return data, session_text
+    return speeches
 
 
 if __name__ == '__main__':
-    with open('../.data/texts/full_dscd-11-002.txt', 'r', encoding="utf-8") as file:
+
+    with open('../.data/texts/dss-12-005.txt', 'r', encoding="utf-8") as file:
         diary = file.read()
-        print(parse_diary(diary, 'dscd', 11, 2))
+        print(parse_diary(diary, 'dss', 11, 2))
 
