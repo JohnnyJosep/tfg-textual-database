@@ -1,0 +1,21 @@
+version: '3.4'
+
+services:
+
+  speechsearchsystem:
+    image: ${DOCKER_REGISTRY-}speechsearchsystem
+    build:
+      context: ..
+      dockerfile: src/SpeechSearchSystem/Dockerfile
+
+  elastic-search:
+    image: ''
+
+  kibana:
+    image: ''
+
+  freeling:
+    image: ''
+
+  freeling-worker:
+    image: ''

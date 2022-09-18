@@ -106,7 +106,7 @@ def _parse_speeches(title, text):
             name_found = name_search.group()
             is_male = found.startswith(MaleTreatment)
             speech['gender'] = 'male' if is_male else 'female'
-            speech['name'] = name_found[len(MaleTreatment):] if is_male else name_found[len(FemaleTreatment):]
+            speech['surname'] = name_found[len(MaleTreatment):] if is_male else name_found[len(FemaleTreatment):]
 
             title_treatment = found[len(name_found):-1]
             if title_treatment != '':

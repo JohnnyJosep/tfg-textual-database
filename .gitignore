@@ -1,6 +1,7 @@
 .data
 .docker
 .idea
+__pycache__
 .ipynb_checkpoints
 *credential.json
 *token.json

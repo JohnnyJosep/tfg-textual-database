@@ -4,8 +4,8 @@ root = true
 [*]
 indent_style = space
 
-# Xml files
-[*.xml]
+# Xml & Yaml files
+[*.{xml,yml,yaml}]
 indent_size = 2
 
 # C# files
