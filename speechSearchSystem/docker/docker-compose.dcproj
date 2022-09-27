@@ -6,13 +6,44 @@
     <ProjectGuid>bcc8a7f8-722c-47ea-8978-46e4dcb906ba</ProjectGuid>
     <DockerLaunchAction>LaunchBrowser</DockerLaunchAction>
     <DockerServiceUrl>{Scheme}://localhost:{ServicePort}/swagger</DockerServiceUrl>
-    <DockerServiceName>speechsearchsystem</DockerServiceName>
+    <DockerServiceName>speech_search_system</DockerServiceName>
+    <DockerComposeProjectName>speech_search_system</DockerComposeProjectName>
   </PropertyGroup>
   <ItemGroup>
-    <None Include="docker-compose.override.yml">
-      <DependentUpon>docker-compose.yml</DependentUpon>
-    </None>
-    <None Include="docker-compose.yml" />
     <None Include=".dockerignore" />
+    <None Include="docker-compose.override.yml" />
+    <None Include="docker-compose.yml" />
+    <None Include="freeling-worker\Dockerfile" />
+    <None Include="freeling-worker\obj\Docker\CanonicalServiceNames.cache" />
+    <None Include="freeling-worker\worker\.idea\.gitignore" />
+    <None Include="freeling-worker\worker\.idea\compiler.xml" />
+    <None Include="freeling-worker\worker\.idea\encodings.xml" />
+    <None Include="freeling-worker\worker\.idea\jarRepositories.xml" />
+    <None Include="freeling-worker\worker\.idea\misc.xml" />
+    <None Include="freeling-worker\worker\.idea\vcs.xml" />
+    <None Include="freeling-worker\worker\.idea\workspace.xml" />
+    <None Include="freeling-worker\worker\pom.xml" />
+    <None Include="freeling-worker\worker\src\main\java\tfg\textual_database\FreelingService.java" />
+    <None Include="freeling-worker\worker\src\main\java\tfg\textual_database\Main.java" />
+    <None Include="freeling-worker\worker\src\main\java\tfg\textual_database\SpeechMessage.java" />
+    <None Include="freeling-worker\worker\target\classes\tfg\textual_database\Main.class" />
+    <None Include="freeling-worker\worker\target\maven-archiver\pom.properties" />
+    <None Include="freeling-worker\worker\target\maven-status\maven-compiler-plugin\compile\default-compile\createdFiles.lst" />
+    <None Include="freeling-worker\worker\target\maven-status\maven-compiler-plugin\compile\default-compile\inputFiles.lst" />
+    <None Include="freeling-worker\worker\target\worker-1.0-SNAPSHOT.jar" />
+    <None Include="freeling\Dockerfile" />
+    <None Include="freeling\obj\Docker\CanonicalServiceNames.cache" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="freeling\obj\Docker\empty\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Remove="freeling-worker\worker\target\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Remove="freeling-worker\worker\.idea\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Remove="freeling-worker\obj\**" />
   </ItemGroup>
 </Project>

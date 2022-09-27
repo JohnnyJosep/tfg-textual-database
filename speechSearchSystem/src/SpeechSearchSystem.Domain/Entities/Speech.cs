@@ -1,32 +1,38 @@
-﻿using Ardalis.GuardClauses;
+﻿using System.Text.Json.Serialization;
 
-using SpeechSearchSystem.Domain.Enums;
+using SpeechSearchSystem.Domain.ValueObjects;
 
-namespace SpeechSearchSystem.Domain.Entities
+namespace SpeechSearchSystem.Domain.Entities;
+
+public class Speech
 {
-    public class Speech
-    {
-        public string Id { get; }
-        public int Legislature { get; }
-        public int Session { get; }
-        public string Title { get; }
-        public int Order { get; }
-        public Gender Gender { get; }
-        public DateOnly Date { get; }
-        public string Source { get; }
-        public string Text { get; }
+    [JsonIgnore]
+    [Newtonsoft.Json.JsonIgnore]
+    public string? Id { get; private set; }
+    public Title Title { get; }
+    public Text Text { get; }
+    public Source Source { get; }
+    public Author Author { get; }
+    public MorphologicalAnalysis? MorphologicalAnalysis { get; private set; }
 
-        public Speech(string id, int legislature, int session, string title, int order, Gender gender, DateOnly date, string source, string text)
-        {
-            Id = id;
-            Legislature = Guard.Against.NegativeOrZero(legislature, nameof(legislature));
-            Session = Guard.Against.NegativeOrZero(session, nameof(session));
-            Title = Guard.Against.NullOrWhiteSpace(title, nameof(title));
-            Order = Guard.Against.Negative(order, nameof(order));
-            Gender = gender;
-            Date = date;
-            Source = Guard.Against.NullOrWhiteSpace(source, nameof(source));
-            Text = Guard.Against.NullOrWhiteSpace(text, nameof(text));
-        }
+    public Speech(Title title, Text text, Source source, Author author)
+    {
+        Title = title;
+        Text = text;
+        Source = source;
+        Author = author;
+        MorphologicalAnalysis = null;
+    }
+
+    public void Created(string id)
+    {
+        Ensure.That<DomainException>(!string.IsNullOrEmpty(id), "Id can not be null or empty.");
+        Id = id;
+    }
+
+    public void AddMorphologicalAnalysis(string raw)
+    {
+        Ensure.That<DomainException>(!string.IsNullOrEmpty(raw), "Morphological analysis raw can not be null or empty.");
+        MorphologicalAnalysis = MorphologicalAnalysis.Create(raw);
     }
 }

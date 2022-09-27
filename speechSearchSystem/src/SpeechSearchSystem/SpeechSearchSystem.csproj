@@ -13,11 +13,10 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="7.0.0-preview.7.22376.6" />
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.17.0" />
-    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\SpeechSearchSystem.Application\SpeechSearchSystem.Application.csproj" />
     <ProjectReference Include="..\SpeechSearchSystem.Infrastructure\SpeechSearchSystem.Infrastructure.csproj" />
   </ItemGroup>
 

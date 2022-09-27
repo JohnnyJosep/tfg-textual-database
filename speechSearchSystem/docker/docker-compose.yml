@@ -3,19 +3,84 @@ version: '3.4'
 services:
 
   speechsearchsystem:
+    container_name: speech-search-system
     image: ${DOCKER_REGISTRY-}speechsearchsystem
     build:
       context: ..
       dockerfile: src/SpeechSearchSystem/Dockerfile
+    depends_on:
+      - elasticsearch
+      - rabbitmq
+    networks:
+      - tfg-net
 
-  elastic-search:
-    image: ''
+  elasticsearch:
+    container_name: elasticsearch
+    image: elasticsearch:7.17.4
+    environment:
+      - xpack.security.enabled=false
+      - "discovery.type=single-node"
+    volumes:
+      - './.data/elasticsearch:/usr/share/elasticsearch/data' 
+    ports:
+      - 9200:9200
+    networks:
+      - tfg-net
 
   kibana:
-    image: ''
+    container_name: kibana
+    image: kibana:7.17.4
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+    ports:
+      - 5601:5601
+    depends_on:
+      - elasticsearch
+    networks:
+      - tfg-net
+
+  rabbitmq:
+    image: rabbitmq:3.10-management-alpine
+    container_name: api-rabbitmq
+    hostname: api-rabbitmq
+    healthcheck:
+      test: rabbitmq-diagnostics -q ping
+      interval: 30s
+      timeout: 30s
+      retries: 3
+    environment:
+      - RABBITMQ_DEFAULT_USER=myuser
+      - RABBITMQ_DEFAULT_PASS=mypassword
+    volumes:
+      - './.data/rabbitmq:/var/lib/rabbitmq/mnesia'
+    ports:
+      - '5672:5672'
+      - '15672:15672'
+    restart: always
+    networks:
+      - tfg-net
 
   freeling:
-    image: ''
+    container_name: freeling
+    hostname: freeling
+    build:
+      context: ./freeling
+    command: analyze -f es.cfg --server -p 50005
+    ports:
+      - 50005:50005
+    networks:
+      - tfg-net
 
   freeling-worker:
-    image: ''
+    container_name: freeling-worker
+    build:
+      context: ./freeling-worker
+    depends_on:
+      - freeling
+      - rabbitmq
+    networks:
+      - tfg-net
+
+networks:
+  tfg-net:
+    driver: bridge

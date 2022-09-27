@@ -7,7 +7,7 @@ PresidencyPattern = 'PRESIDENCIA ((DEL EXCMO\. SR\. D\.)|(DE LA EXCMA\. SRA\. D\
 WeekDayPattern = '(lunes|martes|miércoles|jueves|viernes|sábado|domingo)'
 MonthPattern = '(enero|febrero|mayo|abril|marzo|junio|julio|agosto|septiembre|setiembre|octubre|noviembre|diciembre)'
 DatePattern = r'\d{1,2} de ' + MonthPattern + r' de \d{4}'
-CelebratedPattern = 'celebrada el ' + WeekDayPattern + ' ' + DatePattern
+CelebratedPattern = 'celebrada el ' + WeekDayPattern + '(\,?) ' + DatePattern
 
 OpenSessionPattern = r'Se (abre|reanuda) la sesión a (.+) (de la mañana|del mediodía|de la tarde|de la noche|horas)( y (.+) minutos)?\.\n'
 EndSessionPattern = r'(Eran las|Era la) (.+?) (de la mañana|del mediodía|de la tarde|de la noche)\.\s*\n'
@@ -81,7 +81,7 @@ def _parse_speech_text(text):
 
         interruptions.append(interruption)
 
-    return {'text': text, 'interruptions': interruptions}
+    return {'text': text, 'interruptions': interruptions, 'total_interruptions': len(interruptions)}
 
 
 def _parse_speeches(title, text):
