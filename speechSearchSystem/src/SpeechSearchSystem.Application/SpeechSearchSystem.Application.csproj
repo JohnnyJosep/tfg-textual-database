@@ -11,6 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\SpeechSearchSystem.Contracts\SpeechSearchSystem.Contracts.csproj" />
     <ProjectReference Include="..\SpeechSearchSystem.Domain\SpeechSearchSystem.Domain.csproj" />
   </ItemGroup>
 

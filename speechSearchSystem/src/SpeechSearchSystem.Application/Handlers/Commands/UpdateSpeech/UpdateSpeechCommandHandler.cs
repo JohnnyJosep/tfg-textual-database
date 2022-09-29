@@ -20,7 +20,7 @@ internal class UpdateSpeechCommandHandler : IRequestHandler<UpdateSpeechCommand>
     {
         var speech = await _elasticsearchService.GetAsync(request.Id, cancellationToken);
         speech.AddMorphologicalAnalysis(request.MorphologicalAnalysisRaw);
-        await _elasticsearchService.UpdateAsync(speech, cancellationToken);
+        await _elasticsearchService.UpdateAsync(request.Id, speech, cancellationToken);
 
         return Unit.Value;
     }

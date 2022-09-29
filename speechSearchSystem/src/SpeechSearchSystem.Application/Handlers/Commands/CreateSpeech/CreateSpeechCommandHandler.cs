@@ -4,6 +4,7 @@ using MediatR;
 
 using SpeechSearchSystem.Application.JsonConverters;
 using SpeechSearchSystem.Application.Services;
+using SpeechSearchSystem.Contracts;
 using SpeechSearchSystem.Domain.Entities;
 using SpeechSearchSystem.Domain.ValueObjects;
 
@@ -15,8 +16,6 @@ public record CreateSpeechCommand(
     string Name, string Surname, string Group, string Formation, 
     [property:JsonConverter(typeof(DateOnlyJsonConverter))]DateOnly EntryDate, [property: JsonConverter(typeof(DateOnlyJsonConverter))] DateOnly? LeavingDate) 
     : IRequest<string>;
-
-internal record CreatedSpeechMessage(string Id, string Text);
 
 internal class CreateSpeechCommandHandler : IRequestHandler<CreateSpeechCommand, string>
 {

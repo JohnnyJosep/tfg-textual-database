@@ -7,11 +7,13 @@ public class MorphologicalAnalysis : ValueObject
 {
     private readonly List<MorphologicalWordAnalysis> _partOfSpeeches = new();
     public IReadOnlyCollection<MorphologicalWordAnalysis> PartOfSpeech => _partOfSpeeches;
+    public IReadOnlyCollection<string> Lexemes => _partOfSpeeches.Select(p => p.Lexeme).ToArray();
+    public IReadOnlyCollection<string> TaggedLexemes => _partOfSpeeches.Select(p => $"{p.TagSet[0]}:{p.Lexeme}").ToArray();
 
 
     private MorphologicalAnalysis(string[] rawPoS)
     {
-        foreach (string raw in rawPoS)
+        foreach (string raw in rawPoS.Where(r => !string.IsNullOrEmpty(r)))
         {
             _partOfSpeeches.Add(MorphologicalWordAnalysis.Create(raw));
         }

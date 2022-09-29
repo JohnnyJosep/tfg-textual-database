@@ -1,0 +1,19 @@
+{
+  "profiles": {
+    "Docker Compose": {
+      "commandName": "DockerCompose",
+      "commandVersion": "1.0",
+      "composeLaunchAction": "LaunchBrowser",
+      "composeLaunchServiceName": "speechsearchsystem",
+      "composeLaunchUrl": "{Scheme}://localhost:{ServicePort}/swagger",
+      "serviceActions": {
+        "elasticsearch": "StartWithoutDebugging",
+        "freeling": "StartWithoutDebugging",
+        "freeling-worker": "StartDebugging",
+        "kibana": "StartWithoutDebugging",
+        "rabbitmq": "StartWithoutDebugging",
+        "speechsearchsystem": "StartDebugging"
+      }
+    }
+  }
+}

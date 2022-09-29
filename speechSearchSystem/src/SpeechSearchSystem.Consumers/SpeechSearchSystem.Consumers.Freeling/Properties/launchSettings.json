@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "SpeechSearchSystem.Consumers.Freeling": {
+      "commandName": "Project"
+    },
+    "Docker": {
+      "commandName": "Docker"
+    }
+  }
+}

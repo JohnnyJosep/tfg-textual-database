@@ -16,7 +16,7 @@ public static class DependencyInjectionExtensions
     {
         var pool = new SingleNodeConnectionPool(new Uri(Constants.ElasticSearchHost));
         var settings = new ConnectionSettings(pool, JsonNetSerializer.Default)
-            .DefaultIndex("speeches")
+            .DefaultIndex(Constants.ElasticSearchIndex)
             .EnableApiVersioningHeader();
         var client = new ElasticClient(settings);
         services.AddSingleton(client);

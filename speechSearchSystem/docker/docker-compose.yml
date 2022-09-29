@@ -74,7 +74,9 @@ services:
   freeling-worker:
     container_name: freeling-worker
     build:
-      context: ./freeling-worker
+      context: ..
+      dockerfile: src/SpeechSearchSystem.Consumers/SpeechSearchSystem.Consumers.Freeling/Dockerfile
+    restart: always
     depends_on:
       - freeling
       - rabbitmq

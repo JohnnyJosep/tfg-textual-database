@@ -8,5 +8,5 @@ public interface IElasticsearchService
 
     Task<Speech> GetAsync(string id, CancellationToken cancellationToken = default);
 
-    Task UpdateAsync(Speech speech, CancellationToken cancellationToken = default);
+    Task UpdateAsync(string id, Speech speech, CancellationToken cancellationToken = default);
 }

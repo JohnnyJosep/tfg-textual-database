@@ -32,10 +32,10 @@ internal class ElasticsearchService : IElasticsearchService
             : response.Body;
     }
 
-    public async Task UpdateAsync(Speech speech, CancellationToken cancellationToken = default)
+    public async Task UpdateAsync(string id, Speech speech, CancellationToken cancellationToken = default)
     {
         var response = await _client
-            .UpdateAsync<Speech>(speech.Id, u => u.Index(Constants.ElasticSearchIndex).Doc(speech), cancellationToken);
+            .UpdateAsync<Speech>(id, u => u.Index(Constants.ElasticSearchIndex).Doc(speech), cancellationToken);
         if (!response.IsValid)
         {
             throw new ElasticSearchServiceException(response.DebugInformation, response.OriginalException);

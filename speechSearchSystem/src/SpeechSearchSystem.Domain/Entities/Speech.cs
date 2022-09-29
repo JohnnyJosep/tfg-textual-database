@@ -1,9 +1,11 @@
 ﻿using System.Text.Json.Serialization;
 
+using SpeechSearchSystem.Domain.JsonConverters;
 using SpeechSearchSystem.Domain.ValueObjects;
 
 namespace SpeechSearchSystem.Domain.Entities;
 
+[Newtonsoft.Json.JsonConverter(typeof(SpeechJsonConverter))]
 public class Speech
 {
     [JsonIgnore]
@@ -23,13 +25,7 @@ public class Speech
         Author = author;
         MorphologicalAnalysis = null;
     }
-
-    public void Created(string id)
-    {
-        Ensure.That<DomainException>(!string.IsNullOrEmpty(id), "Id can not be null or empty.");
-        Id = id;
-    }
-
+    
     public void AddMorphologicalAnalysis(string raw)
     {
         Ensure.That<DomainException>(!string.IsNullOrEmpty(raw), "Morphological analysis raw can not be null or empty.");
