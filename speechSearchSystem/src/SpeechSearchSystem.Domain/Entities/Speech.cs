@@ -1,6 +1,4 @@
-﻿using System.Text.Json.Serialization;
-
-using SpeechSearchSystem.Domain.JsonConverters;
+﻿using SpeechSearchSystem.Domain.JsonConverters;
 using SpeechSearchSystem.Domain.ValueObjects;
 
 namespace SpeechSearchSystem.Domain.Entities;
@@ -8,21 +6,26 @@ namespace SpeechSearchSystem.Domain.Entities;
 [Newtonsoft.Json.JsonConverter(typeof(SpeechJsonConverter))]
 public class Speech
 {
-    [JsonIgnore]
-    [Newtonsoft.Json.JsonIgnore]
-    public string? Id { get; private set; }
     public Title Title { get; }
     public Text Text { get; }
+    public DateOnly CelebratedAt { get; }
     public Source Source { get; }
     public Author Author { get; }
+    public int TotalInterruptions { get; }
+    public IReadOnlyCollection<Interruption> Interruptions { get; }
     public MorphologicalAnalysis? MorphologicalAnalysis { get; private set; }
 
-    public Speech(Title title, Text text, Source source, Author author)
+    public Speech(Title title, Text text, DateOnly celebratedAt, Source source, Author author, int totalInterruptions, IReadOnlyCollection<Interruption> interruptions)
     {
+        Ensure.That<DomainException>(totalInterruptions == interruptions.Count, "TotalInterruptions and Interruptions count must be the same");
+
         Title = title;
         Text = text;
+        CelebratedAt = celebratedAt;
         Source = source;
         Author = author;
+        TotalInterruptions = totalInterruptions;
+        Interruptions = interruptions;
         MorphologicalAnalysis = null;
     }
     

@@ -1,4 +1,5 @@
-﻿using SpeechSearchSystem.Domain.ValueObjects.Base;
+﻿using SpeechSearchSystem.Domain.Enums;
+using SpeechSearchSystem.Domain.ValueObjects.Base;
 
 namespace SpeechSearchSystem.Domain.ValueObjects;
 
@@ -8,10 +9,9 @@ public class Author : ValueObject
     public string Surname { get; }
     public string Group { get; }
     public string Formation { get; }
-    public DateOnly EntryDate { get; }
-    public DateOnly? LeavingDate { get; }
+    public Gender Gender { get; }
 
-    private Author(string name, string surname, string group, string formation, DateOnly entryDate, DateOnly? leavingDate)
+    private Author(string name, string surname, string group, string formation, Gender gender)
     {
         Ensure.That<DomainException>(!string.IsNullOrWhiteSpace(name), "Name can not be null or white space.");
         Ensure.That<DomainException>(!string.IsNullOrWhiteSpace(surname), "Surname can not be null or white space.");
@@ -22,13 +22,12 @@ public class Author : ValueObject
         Surname = surname;
         Group = group;
         Formation = formation;
-        EntryDate = entryDate;
-        LeavingDate = leavingDate;
+        Gender = gender;
     }
 
     public static Author CreateNew(
-        string name, string surname, string group, string formation, DateOnly entryDate, DateOnly? leavingDate) =>
-        new(name, surname, group, formation, entryDate, leavingDate);
+        string name, string surname, string group, string formation, Gender gender) =>
+        new(name, surname, group, formation, gender);
 
     protected override IEnumerable<object?> GetAtomicValues()
     {
@@ -36,8 +35,7 @@ public class Author : ValueObject
         yield return Surname;
         yield return Group;
         yield return Formation;
-        yield return EntryDate;
-        yield return LeavingDate;
+        yield return Gender;
     }
 
     public override string ToString() => $"{Name} {Surname} ({Formation})";

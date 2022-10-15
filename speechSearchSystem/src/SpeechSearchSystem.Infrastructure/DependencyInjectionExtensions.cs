@@ -6,6 +6,7 @@ using Nest;
 using Nest.JsonNetSerializer;
 
 using SpeechSearchSystem.Application.Services;
+using SpeechSearchSystem.Domain.Entities;
 using SpeechSearchSystem.Infrastructure.Services;
 
 namespace SpeechSearchSystem.Infrastructure;
@@ -16,6 +17,7 @@ public static class DependencyInjectionExtensions
     {
         var pool = new SingleNodeConnectionPool(new Uri(Constants.ElasticSearchHost));
         var settings = new ConnectionSettings(pool, JsonNetSerializer.Default)
+            .DisableDirectStreaming()
             .DefaultIndex(Constants.ElasticSearchIndex)
             .EnableApiVersioningHeader();
         var client = new ElasticClient(settings);

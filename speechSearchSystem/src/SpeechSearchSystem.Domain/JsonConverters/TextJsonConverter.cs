@@ -1,28 +1,8 @@
-﻿using System.Text.Json;
-
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 
 using SpeechSearchSystem.Domain.ValueObjects;
 
-using JsonSerializer = Newtonsoft.Json.JsonSerializer;
-
 namespace SpeechSearchSystem.Domain.JsonConverters;
-
-public class TextJsonConverter : System.Text.Json.Serialization.JsonConverter<Text>
-{
-    public override Text? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options) =>
-        reader.TokenType == JsonTokenType.Null 
-            ? null 
-            : Text.FromString(reader.GetString()!);
-
-
-    public override void Write(Utf8JsonWriter writer, Text? value, JsonSerializerOptions options)
-    {
-        if (value is null) writer.WriteNullValue();
-        else writer.WriteStringValue(value.Value);
-    }
-
-}
 
 public class TextNewtonsoftJsonConverter : JsonConverter<Text>
 {

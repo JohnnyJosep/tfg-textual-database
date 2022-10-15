@@ -1,12 +1,12 @@
-﻿using System.Text.Json.Serialization;
+﻿
+using Newtonsoft.Json;
 
 using SpeechSearchSystem.Domain.JsonConverters;
 using SpeechSearchSystem.Domain.ValueObjects.Base;
 
 namespace SpeechSearchSystem.Domain.ValueObjects;
 
-[JsonConverter(typeof(TextJsonConverter))]
-[Newtonsoft.Json.JsonConverter(typeof(TextNewtonsoftJsonConverter))]
+[JsonConverter(typeof(TextNewtonsoftJsonConverter))]
 public class Text : ValueObject
 {
     public string Value { get; }

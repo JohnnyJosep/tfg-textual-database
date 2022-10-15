@@ -3,13 +3,13 @@ import re
 MaleTreatment = 'El señor '
 FemaleTreatment = 'La señora '
 
-PresidencyPattern = 'PRESIDENCIA ((DEL EXCMO\. SR\. D\.)|(DE LA EXCMA\. SRA\. D\.\ª)) [A-Za-zÀàÄäÁáÈèËëÉéÌìÏïÍíÒòÖöÓóÙùÜüÚúÑñ\·\- ]+'
+PresidencyPattern = 'PRESIDENCIA ((DEL EXCMO\. SR\. D\.)|(DE LA EXCMA\. SRA\. D\..?)) [A-Za-zÀàÄäÁáÈèËëÉéÌìÏïÍíÒòÖöÓóÙùÜüÚúÑñ\·\- ]+'
 WeekDayPattern = '(lunes|martes|miércoles|jueves|viernes|sábado|domingo)'
 MonthPattern = '(enero|febrero|mayo|abril|marzo|junio|julio|agosto|septiembre|setiembre|octubre|noviembre|diciembre)'
 DatePattern = r'\d{1,2} de ' + MonthPattern + r' de \d{4}'
 CelebratedPattern = 'celebrada el ' + WeekDayPattern + '(\,?) ' + DatePattern
 
-OpenSessionPattern = r'Se (abre|reanuda) la sesión a (.+) (de la mañana|del mediodía|de la tarde|de la noche|horas)( y (.+) minutos)?\.\n'
+OpenSessionPattern = r'Se (abre|reanuda) la sesión a (.+) (de la mañana|del mediodía|de la tarde|de la noche|horas)(( y (.+))? minutos)?\.?\n'
 EndSessionPattern = r'(Eran las|Era la) (.+?) (de la mañana|del mediodía|de la tarde|de la noche)\.\s*\n'
 
 SpeakerTreatmentPattern = r'^(' + MaleTreatment + '|' + FemaleTreatment + ')'
@@ -65,6 +65,10 @@ def _is_title(paragraph):
 
 
 def _parse_speech_text(text):
+    text = re.sub(r"\n+", " ", text)
+    text = re.sub(r"\.+", ".", text)
+    text = re.sub(r"  +", " ", text)
+
     interruptions_positions = [(m.start(0), m.end(0)) for m in re.finditer(InterruptionPattern, text)]
     if len(interruptions_positions) == 0:
         return {'text': text}
@@ -174,7 +178,7 @@ def parse_diary(text, source, legislature, session):
 
 if __name__ == '__main__':
 
-    with open('../.data/texts/dss-12-005.txt', 'r', encoding="utf-8") as file:
+    with open('../.data/texts/dss-14-406.txt', 'r', encoding="utf-8") as file:
         diary = file.read()
         print(parse_diary(diary, 'dss', 11, 2))
 

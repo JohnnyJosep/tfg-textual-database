@@ -72,11 +72,13 @@ services:
       - tfg-net
 
   freeling-worker:
-    container_name: freeling-worker
     build:
       context: ..
       dockerfile: src/SpeechSearchSystem.Consumers/SpeechSearchSystem.Consumers.Freeling/Dockerfile
     restart: always
+    #deploy:
+    #  mode: replicated
+    #  replicas: 10
     depends_on:
       - freeling
       - rabbitmq

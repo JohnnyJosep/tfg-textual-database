@@ -32,4 +32,7 @@
   <ItemGroup>
     <Folder Include="freeling\obj\Docker\empty\" />
   </ItemGroup>
+  <ItemGroup>
+    <None Remove="freeling-worker\**" />
+  </ItemGroup>
 </Project>
