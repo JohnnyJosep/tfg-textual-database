@@ -24,10 +24,8 @@ def _parse_presidency(text):
     search = re.search(PresidencyPattern, text)
     if search:
         found = search.group()
-        if found.startswith('PRESIDENCIA DEL EXCMO. SR. D. '):
-            return found[30:]
-        else:
-            return found[34:]
+        words = 6 if found.startswith('PRESIDENCIA DE LA') else 5
+        return found.split(' ', maxsplit=words)[-1]
     return None
 
 
@@ -178,7 +176,7 @@ def parse_diary(text, source, legislature, session):
 
 if __name__ == '__main__':
 
-    with open('../.data/texts/dss-14-406.txt', 'r', encoding="utf-8") as file:
+    with open('../.data/texts/dscd-11-015.txt', 'r', encoding="utf-8") as file:
         diary = file.read()
-        print(parse_diary(diary, 'dss', 11, 2))
+        print(parse_diary(diary, 'dscd', 11, 2))
 
